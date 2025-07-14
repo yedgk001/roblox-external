@@ -66,8 +66,8 @@ def main():
     char = read(handle, local + Offset.ModelInstance, "<Q")
     humanoid = find_child_by_name(handle, char, "Humanoid")
 
-    write(handle, humanoid + Offset.WalkSpeed, "<f", 100.0)
-    write(handle, humanoid + Offset.WalkSpeedCheck, "<f", 100.0)
+    write(handle, humanoid + Offset.WalkSpeed, "<f", 150.0)
+    write(handle, humanoid + Offset.WalkSpeedCheck, "<f", 150.0)
     return None
 
 
