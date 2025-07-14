@@ -10,4 +10,4 @@ def get_children(handle, addr):
 
 
 def find_child_by_name(handle, addr, name):
-    return next((c for c in get_children(handle, addr) if read_string_safe(handle, c) == name), 0)
+    return next((c for c in get_children(handle, addr) if read_string_safe(handle, c) == name), "null")
