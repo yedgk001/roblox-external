@@ -10,3 +10,4 @@ class Offset:
     Name = 0x78
     ClassDescriptor = 0x18
     ClassDescriptorToName = 0x8
+    JumpPower = 0x1B8

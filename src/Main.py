@@ -2,10 +2,6 @@ import ctypes
 
 import psutil
 
-from Memory import open_process, write, read
-from Offset import Offset
-from RobloxService import find_child_by_name
-
 
 def get_pid(name="robloxplayerbeta.exe"):
     for p in psutil.process_iter(['name', 'pid']):
@@ -55,19 +51,6 @@ def get_module_base(pid):
 def main():
     pid = get_pid()
     if not pid: return None
-
-    handle = open_process(pid)
-    base = get_module_base(pid)
-
-    dm_fake = read(handle, base + Offset.FakeDataModelPointer, "<Q")
-    dm = read(handle, dm_fake + Offset.FakeDataModelToDataModel, "<Q")
-    players = find_child_by_name(handle, dm, "Players")
-    local = read(handle, players + Offset.LocalPlayer, "<Q")
-    char = read(handle, local + Offset.ModelInstance, "<Q")
-    humanoid = find_child_by_name(handle, char, "Humanoid")
-
-    write(handle, humanoid + Offset.WalkSpeed, "<f", 150.0)
-    write(handle, humanoid + Offset.WalkSpeedCheck, "<f", 150.0)
     return None
 
 
