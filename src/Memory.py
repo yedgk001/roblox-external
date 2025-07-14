@@ -16,7 +16,7 @@ def read_bytes(handle, addr, size):
     return buf.raw
 
 
-def read_string(handle, addr):
+def read_string_safe(handle, addr):
     name_ptr = read(handle, addr + Offset.Name, "<Q")
     length = read(handle, name_ptr + 0x10, "<I")
     if length >= 16:
