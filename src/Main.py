@@ -1,14 +1,18 @@
-import psutil
-from Memory import open_process, write
-from RobloxFactory import read_uint64, find_child_by_name, write_float
-from Offset import Offsets
 import ctypes
 
+import psutil
+
+from Memory import open_process
+from Offset import Offsets
+from RobloxService import read_uint64, find_child_by_name, write_float
+
+
 def get_pid(name="RobloxPlayerBeta.exe"):
-    for p in psutil.process_iter(['name','pid']):
+    for p in psutil.process_iter(['name', 'pid']):
         if p.info['name'] and p.info['name'].lower() == name.lower():
             return p.info['pid']
     return None
+
 
 def get_module_base(pid):
     CreateSnap = ctypes.windll.kernel32.CreateToolhelp32Snapshot
@@ -31,6 +35,7 @@ def get_module_base(pid):
             ("szModule", ctypes.c_char * 256),
             ("szExePath", ctypes.c_char * 260)
         ]
+
     me = MODULEENTRY()
     me.dwSize = ctypes.sizeof(MODULEENTRY)
 
@@ -45,10 +50,12 @@ def get_module_base(pid):
     ctypes.windll.kernel32.CloseHandle(snapshot)
     return None
 
+
 def main():
     pid = get_pid()
     if not pid:
-        print("Roblox not found"); return
+        print("Roblox not found");
+        return
     h = open_process(pid)
     base = get_module_base(pid)
     dm_fake = read_uint64(h, base + Offsets.FakeDataModelPointer)
@@ -61,6 +68,7 @@ def main():
     write_float(h, humanoid + Offsets.WalkSpeed, 100.0)
     write_float(h, humanoid + Offsets.WalkSpeedCheck, 100.0)
     print("✅ WalkSpeed ustawiony na 100")
+
 
 if __name__ == "__main__":
     main()
