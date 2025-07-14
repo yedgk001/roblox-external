@@ -54,7 +54,7 @@ def get_module_base(pid):
 
 def main():
     pid = get_pid()
-    if not pid: return print("Roblox not found")
+    if not pid: return None
 
     handle = open_process(pid)
     base = get_module_base(pid)
