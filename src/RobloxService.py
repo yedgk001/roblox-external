@@ -1,6 +1,7 @@
 from Memory import read, read_string
 from Offset import Offset
 
+
 def get_children(handle, addr):
     arr = read(handle, addr + Offset.Children, "<Q")
     end = read(handle, arr + Offset.ChildrenEnd, "<Q")

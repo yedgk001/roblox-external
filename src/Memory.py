@@ -1,5 +1,6 @@
 import ctypes
 import struct
+
 from Offset import Offset
 
 PROCESS_ALL_ACCESS = 0x1F0FFF
@@ -14,6 +15,7 @@ def read_bytes(handle, addr, size):
     ctypes.windll.kernel32.ReadProcessMemory(handle, ctypes.c_void_p(addr), buf, size, None)
     return buf.raw
 
+
 def read_string(handle, addr):
     name_ptr = read(handle, addr + Offset.Name, "<Q")
     length = read(handle, name_ptr + 0x10, "<I")
@@ -21,6 +23,7 @@ def read_string(handle, addr):
         ptr = read(handle, name_ptr, "<Q")
         return read_bytes(handle, ptr, length).decode('utf-8', errors='ignore')
     return read_bytes(handle, name_ptr, 16).split(b'\x00')[0].decode('utf-8', errors='ignore')
+
 
 def read(handle, addr, fmt):
     size = struct.calcsize(fmt)

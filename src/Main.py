@@ -1,13 +1,15 @@
 import ctypes
+
 import psutil
-from Memory import open_process, write, read, read_string
+
+from Memory import open_process, write, read
 from Offset import Offset
 from RobloxService import find_child_by_name
 
 
-def get_pid(name="RobloxPlayerBeta.exe"):
+def get_pid(name="robloxplayerbeta.exe"):
     for p in psutil.process_iter(['name', 'pid']):
-        if p.info['name'] and p.info['name'].lower() == name.lower():
+        if p.info['name'] and p.info['name'].lower() == name:
             return p.info['pid']
     return None
 
@@ -19,7 +21,7 @@ def get_module_base(pid):
     snapshot = CreateSnap(0x00000008, pid)
     if snapshot == -1: return None
 
-    class MODULEENTRY(ctypes.Structure):
+    class ModuleEntry(ctypes.Structure):
         _fields_ = [
             ("dwSize", ctypes.c_ulong),
             ("th32ModuleID", ctypes.c_ulong),
@@ -33,8 +35,8 @@ def get_module_base(pid):
             ("szExePath", ctypes.c_char * 260)
         ]
 
-    me = MODULEENTRY()
-    me.dwSize = ctypes.sizeof(MODULEENTRY)
+    me = ModuleEntry()
+    me.dwSize = ctypes.sizeof(ModuleEntry)
 
     if not Module32First(snapshot, ctypes.byref(me)):
         ctypes.windll.kernel32.CloseHandle(snapshot)
