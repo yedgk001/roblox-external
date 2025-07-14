@@ -1,4 +1,4 @@
-class Offsets:
+class Offset:
     FakeDataModelPointer = 0x682B928
     FakeDataModelToDataModel = 0x1B8
     LocalPlayer = 0x128

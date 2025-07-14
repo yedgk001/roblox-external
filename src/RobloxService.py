@@ -1,45 +1,28 @@
-from Memory import read_bytes, read, write
-from Offset import Offsets
+from Memory import read_bytes, read_generic, write_generic
+from Offset import Offset
 
 
-def read_uint64(handle, addr): return read(handle, addr, "<Q")
+def read(handle, addr, fmt): return read_generic(handle, addr, fmt)
 
 
-def read_uint32(handle, addr): return read(handle, addr, "<I")
-
-
-def write_float(handle, addr, value): return write(handle, addr, "<f", value)
+def write(handle, addr, fmt, value): return write_generic(handle, addr, fmt, value)
 
 
 def read_string(handle, addr):
-    namePtr = read_uint64(handle, addr + Offsets.Name)
-    length = read_uint32(handle, namePtr + 0x10)
+    name_ptr = read(handle, addr + Offset.Name, "<Q")
+    length = read(handle, name_ptr + 0x10, "<I")
     if length >= 16:
-        ptr = read_uint64(handle, namePtr)
+        ptr = read(handle, name_ptr, "<Q")
         return read_bytes(handle, ptr, length).decode('utf-8', errors='ignore')
-    else:
-        return read_bytes(handle, namePtr, 16).split(b'\x00')[0].decode('utf-8', errors='ignore')
+    return read_bytes(handle, name_ptr, 16).split(b'\x00')[0].decode('utf-8', errors='ignore')
 
 
 def get_children(handle, addr):
-    arr = read_uint64(handle, addr + Offsets.Children)
-    end = read_uint64(handle, arr + Offsets.ChildrenEnd)
-    current = read_uint64(handle, arr)
-    result = []
-    while current < end:
-        result.append(read_uint64(handle, current))
-        current += 0x10
-    return result
-
-
-def find_child_by_class(handle, addr, class_name):
-    for c in get_children(handle, addr):
-        if None: pass
-    return 0
+    arr = read(handle, addr + Offset.Children, "<Q")
+    end = read(handle, arr + Offset.ChildrenEnd, "<Q")
+    current = read(handle, arr, "<Q")
+    return [read(handle, current + i * 0x10, "<Q") for i in range((end - current) // 0x10)]
 
 
 def find_child_by_name(handle, addr, name):
-    for c in get_children(handle, addr):
-        if read_string(handle, c) == name:
-            return c
-    return 0
+    return next((c for c in get_children(handle, addr) if read_string(handle, c) == name), 0)
